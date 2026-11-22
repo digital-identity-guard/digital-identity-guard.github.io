@@ -314,3 +314,4 @@ li.st-pass .st-label { color: #5ce0ce; } li.st-fail .st-label { color: #ff9d9d; 
 .foot-icon { vertical-align: -4px; }
 .hero .sub:empty { display: none; }
 .demo-note { margin: 10px 0 0; padding: 8px 12px; border-radius: 10px; border: 1px dashed #5aa9e6; color: #bcdcf5; font-size: 13px; }
+.pf-ig { background: linear-gradient(45deg, #f58529, #dd2a7b 50%, #8134af); color: #fff; }

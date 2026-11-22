@@ -22,7 +22,7 @@
 })(typeof self !== 'undefined' ? self : this, function (A, M, G) {
   'use strict';
 
-  const SUPPORTED = ['x', 'linkedin'];
+  const SUPPORTED = ['x', 'linkedin', 'instagram'];
 
   // The 12 manual checklist items and their weights (total 10). `hard`: failing it caps the score at 3.
   const MANUAL_ITEMS = [
