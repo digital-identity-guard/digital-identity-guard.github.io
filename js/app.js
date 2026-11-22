@@ -4,7 +4,6 @@
 
   const A = window.DIGAnalyzer;
   const C = window.DIGCheck;
-  const CONFIG = window.DIGConfig || {};
   const STRINGS = window.DIGStrings;
   const $ = (id) => document.getElementById(id);
   const PAGES = ['home', 'scan', 'about', 'tips'];
@@ -135,30 +134,6 @@
     $('account').removeAttribute('aria-invalid');
   }));
 
-  async function callAI(input, parsed) {
-    if (!CONFIG.aiEndpoint) return { local: true };
-    try {
-      const res = await fetch(CONFIG.aiEndpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          platform: parsed.platformId,
-          username: parsed.username,
-          url: parsed.kind === 'link' && parsed.url ? parsed.url.href : '',
-          message: input.message,
-          lang,
-        }),
-      });
-      const data = await res.json().catch(() => ({}));
-      if (res.status === 429) return { error: 'ai.rate_limited' };
-      if (data.error === 'message_too_long') return { error: 'ai.message_too_long', params: { max: data.max } };
-      if (!res.ok || !data.indicators) return { local: true, remaining: data.remaining };
-      return { remote: data };
-    } catch (e) {
-      return { local: true };
-    }
-  }
-
   $('scan-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     if (busy) return;
@@ -184,24 +159,19 @@
 
     setError('account-error', null);
     $('account').removeAttribute('aria-invalid');
-    let remote = null;
-    let aiState = null;
     if (mode === 'ai') {
+      // Short pause so the analysis step is visible.
       busy = true;
       $('analyze').disabled = true;
       $('loading').classList.remove('hidden');
-      const out = await callAI(input, check.parsed);
+      await new Promise((resolve) => setTimeout(resolve, 1800));
       busy = false;
       $('analyze').disabled = false;
       $('loading').classList.add('hidden');
-      if (out.error) { setError('account-error', out.error, out.params); return; }
-      remote = out.remote || null;
-      aiState = out.local ? { local: true, remaining: out.remaining } : null;
     }
 
     lastInput = input;
-    lastResult = C.analyze(input, remote);
-    lastResult.aiState = aiState;
+    lastResult = C.analyze(input);
     $('report').classList.remove('hidden');
     renderReport(lastResult);
     $('report').focus({ preventScroll: true });
@@ -279,30 +249,16 @@
     r.groups.forEach((g) => {
       const ul = el('ul', { class: 'status-list' });
       g.items.forEach((it) => {
-        let desc = it.note || '';
-        if (!desc && it.id === 'g9.impersonation' && it.params.kw && it.status === 'fail') desc = t('f.keyword.d', it.params);
-        ul.append(statusRow(it.status, t(it.id),
-          it.source ? el('span', { class: 'f-src', text: t('src.' + it.source) }) : null, desc));
+        let desc = '';
+        if (it.id === 'g9.impersonation' && it.params.kw && it.status === 'fail') desc = t('f.keyword.d', it.params);
+        ul.append(statusRow(it.status, t(it.id), null, desc));
       });
       box.append(el('div', { class: 'group' }, [el('h4', { text: t(g.id) }), ul]));
     });
-    if (r.groups.some((g) => g.items.some((i) => i.status === 'unknown'))) {
-      box.append(el('p', { class: 'muted', text: t('res.unknownNote') }));
-    }
   }
 
-  function renderAISummary(r) {
-    const sec = $('ai-summary-sec');
-    const box = $('ai-summary');
-    box.replaceChildren();
-    if (r.mode !== 'ai') { sec.classList.add('hidden'); return; }
-    sec.classList.remove('hidden');
-    if (r.remote) {
-      if (r.remote.summary) box.append(el('p', { dir: 'auto', text: r.remote.summary }));
-      if (!r.remote.profileFound) box.append(el('p', { class: 'note', text: t('res.aiNoProfile') }));
-    } else {
-      box.append(el('p', { class: 'note', text: t('res.aiLocal') }));
-    }
+  function renderDemoNote(r) {
+    $('demo-note').classList.toggle('hidden', r.mode !== 'ai');
   }
 
   function renderBadge(r) {
@@ -330,10 +286,7 @@
     const local = r.message.findings.map((f) => ({
       severity: f.severity, title: t('m.' + f.id, f.params), note: t('m.' + f.id + '.d', f.params), quote: f.quote,
     }));
-    // Claude's findings are added when they are not already covered by the browser's own checks.
-    const remote = (r.remote && r.remote.findings) || [];
-    const all = local.concat(remote.filter((f) => !local.some((l) => l.quote && f.quote && l.quote.includes(f.quote))))
-      .sort((a, b) => order[a.severity] - order[b.severity]);
+    const all = local.sort((a, b) => order[a.severity] - order[b.severity]);
     if (!all.length) {
       list.append(el('li', { class: 'sev-none' }, [el('span', { class: 'f-desc', text: t('m.none') })]));
       return;
@@ -351,7 +304,7 @@
   function renderReport(r) {
     renderCategories(r);
     renderScore(r);
-    renderAISummary(r);
+    renderDemoNote(r);
     renderItems(r);
     renderBadge(r);
     renderMessages(r);

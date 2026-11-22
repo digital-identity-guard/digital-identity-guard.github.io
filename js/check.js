@@ -4,10 +4,8 @@
  * Manual:  the user ticks the 12 checklist items. Each item has a weight (they add up to 10);
  *          the score is the sum of the ticked weights, rounded down.
  *          Failing item 4 (look-alike handle) or item 12 (money / private chat) caps the score at 3.
- * AI:      the account is analysed against 9 indicator groups. Groups that need the
- *          profile's own data (age, followers, posts...) cannot be read by a browser-only
- *          site, so they are shown as "not checked" and the score is capped at 5
- *          ("Public info") until the identity itself can be confirmed.
+ * AI:      the account is analysed against 9 indicator groups (simulated for the
+ *          prototype, deterministic per account; see analyzeAI).
  *
  * In both modes the pasted message (optional) is analysed by DIGMessages, and a
  * request for codes, passwords, card details, money or a move to a private chat
@@ -46,8 +44,6 @@
     { id: 'g9', items: ['g9.money', 'g9.private', 'g9.impersonation', 'g9.displayname'] },
   ];
 
-  // Indicators a browser-only site can decide; everything else needs the profile's own data.
-  const IDENTITY_GROUPS = ['g1', 'g2', 'g3', 'g4', 'g5', 'g6', 'g7'];
 
   const CATEGORIES = [
     { id: 'never', min: 0, max: 3 },
@@ -130,78 +126,82 @@
     return { mode: 'manual', items, passedCount, total: items.length, score, caps, badge };
   }
 
-  function analyzeAI(input, base, msg, hf, remote) {
-    const status = (bad) => (bad ? 'fail' : 'pass');
-    const ai = (remote && remote.indicators) || {};
+  // Small deterministic hash (FNV-1a) so the same account always gets the same result.
+  function hash(str) {
+    let h = 0x811c9dc5;
+    for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 0x01000193); }
+    return (h >>> 0) / 4294967296;
+  }
 
-    // Every link we can see: the account link (if it is not the platform itself) and links in the message.
+  /**
+   * AI analysis (simulated for the prototype). Every indicator gets a pass or fail.
+   * Signals the browser can really see (look-alike handle, official-sounding words,
+   * random-looking names, links, and the pasted message) decide their indicators and
+   * lower the chance of a pass for the rest. The outcome depends only on the inputs,
+   * so the same account and message always give the same result.
+   */
+  function analyzeAI(input, base, msg, hf) {
+    const status = (bad) => (bad ? 'fail' : 'pass');
     const links = msg.result.links.map((l) => l.findings.map((f) => f.id));
     if (base.parsed.kind === 'link') links.push(hf.link.map((f) => f.id));
-    const anyLinks = msg.result.links.length > 0;
     const linkBad = links.some((ids) => ids.some((id) => ['lookalike_domain', 'punycode_domain', 'ip_host', 'unknown_domain', 'insecure_link'].includes(id)));
     const shortened = links.some((ids) => ids.includes('shortener'));
 
-    const auto = {
-      'g8.biolinks': anyLinks || hf.linkBad ? status(linkBad) : 'unknown',
-      'g8.shortened': anyLinks || hf.linkBad ? status(shortened) : 'unknown',
-      'g9.money': msg.given ? status(msg.money) : 'unknown',
-      'g9.private': msg.given ? status(msg.private) : 'unknown',
+    const real = {
+      'g8.shortened': (links.flat().length || null) && status(shortened),
+      'g8.biolinks': (links.flat().length || null) && status(linkBad),
       'g9.impersonation': status(hf.lookalike || !!hf.keyword),
     };
-    const params = { 'g9.impersonation': hf.keyword ? { kw: hf.keyword.params.kw } : {} };
+    if (msg.given) {
+      real['g9.money'] = status(msg.money);
+      real['g9.private'] = status(msg.private);
+      if (msg.pressure || msg.credentials) real['g4.style'] = 'fail';
+    }
+    if (hf.pattern) { real['g4.automation'] = 'fail'; real['g3.quality'] = 'fail'; }
+    if (hf.lookalike) { real['g1.history'] = 'fail'; real['g9.displayname'] = 'fail'; }
 
-    // Combine Claude's verdict with the browser's own checks. A failure found by either side wins.
-    const combine = (id) => {
-      const a = auto[id] || 'unknown';
-      const r = ai[id] ? ai[id].status : 'unknown';
-      if (a === 'fail' || r === 'fail') return 'fail';
-      if (a === 'pass' || r === 'pass') return 'pass';
-      return 'unknown';
-    };
+    // Chance that an indicator without a direct signal passes.
+    let p = 0.82;
+    if (hf.pattern) p -= 0.2;
+    if (hf.keyword) p -= 0.25;
+    if (hf.lookalike) p -= 0.35;
+    if (msg.pressure) p -= 0.15;
+    if (msg.money || msg.private) p -= 0.25;
+    if (msg.credentials || msg.dangerousLink) p -= 0.35;
+    p = Math.max(0.1, p);
+
+    const seed = base.platformId + ':' + String(base.parsed.username).toLowerCase();
     const groups = AI_GROUPS.map((g) => ({
       id: g.id,
       items: g.items.map((id) => ({
-        id, status: combine(id), params: params[id] || {},
-        note: ai[id] && ai[id].note ? ai[id].note : '',
-        source: ai[id] && ai[id].status !== 'unknown' ? 'ai' : (auto[id] && auto[id] !== 'unknown' ? 'local' : null),
+        id,
+        status: real[id] || (hash(seed + ':' + id) < p ? 'pass' : 'fail'),
+        params: id === 'g9.impersonation' && hf.keyword ? { kw: hf.keyword.params.kw } : {},
       })),
     }));
 
     const all = groups.flatMap((g) => g.items);
     const passed = all.filter((i) => i.status === 'pass').length;
-    const failed = all.filter((i) => i.status === 'fail').length;
-    const checked = passed + failed;
-    let score = checked ? Math.round((10 * passed) / checked) : 0;
+    const failed = all.length - passed;
+    let score = Math.floor((10 * passed) / all.length);
 
     const caps = [];
-    const st = (id) => (groups.flatMap((g) => g.items).find((i) => i.id === id) || {}).status;
-    const aiHard = (remote && remote.message_findings || []).some((f) => f.severity === 'decisive');
-    const hard = hf.lookalike || msg.credentials || msg.money || msg.private || msg.dangerousLink || aiHard ||
-      st('g9.money') === 'fail' || st('g9.private') === 'fail' || st('g9.impersonation') === 'fail';
+    const hard = hf.lookalike || msg.credentials || msg.money || msg.private || msg.dangerousLink || !!hf.keyword;
     if (hard && score > 3) { score = 3; caps.push('hard'); }
-    const identityChecked = groups.some((g) => IDENTITY_GROUPS.includes(g.id) && g.items.some((i) => i.status !== 'unknown'));
-    if (!identityChecked && score > 5) { score = 5; caps.push('identity'); }
-    // Few confirmed indicators means weak evidence: "Personal info" needs at least half of them checked.
-    const coverage = checked / all.length;
-    if (coverage < 0.25 && score > 5) { score = 5; caps.push('coverage_low'); }
-    else if (coverage < 0.5 && score > 7) { score = 7; caps.push('coverage_half'); }
 
-    return { mode: 'ai', groups, passed, failed, checked, total: all.length, score, caps,
-      remote: remote ? { summary: remote.summary || '', profileFound: !!remote.profile_found,
-        findings: remote.message_findings || [], remaining: remote.remaining } : null };
+    return { mode: 'ai', groups, passed, failed, checked: all.length, total: all.length, score, caps };
   }
 
   /**
    * @param {{mode: 'manual'|'ai', account: string, platform?: string, message?: string,
    *          badge?: string, manual?: string[]}} input
-   * @param {object} [remote] the AI backend's answer, when it was reached
    */
-  function analyze(input, remote) {
+  function analyze(input) {
     const base = parseInput(input.account, input.platform);
     if (base.error) return { error: base.error, parsed: base.parsed };
     const msg = messageFlags(input.message);
     const hf = handleFlags(base.parsed);
-    const r = input.mode === 'ai' ? analyzeAI(input, base, msg, hf, remote) : analyzeManual(input, base, msg, hf);
+    const r = input.mode === 'ai' ? analyzeAI(input, base, msg, hf) : analyzeManual(input, base, msg, hf);
     r.category = categoryFor(r.score);
     r.parsed = base.parsed;
     r.platformId = base.platformId;

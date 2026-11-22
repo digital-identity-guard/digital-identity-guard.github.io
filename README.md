@@ -32,7 +32,7 @@ Each check gives a score out of 10, which maps to one of the four categories. Se
 
 ## AI analysis
 
-The AI analysis is powered by Claude through a small backend in [`worker/`](worker/README.md) (a Cloudflare Worker), which keeps the API key secret and limits each visitor to 4 analyses per hour. Put the Worker's address in `js/config.js`. Until then, the AI mode uses the browser's own checks only.
+In this prototype the AI analysis is a simulated demo (the page labels it as such). It gives every indicator in the 9 groups a pass or fail. Signals the browser can really see, such as look-alike handles, official-sounding words, links and the pasted message, decide their indicators and lower the result. The outcome depends only on the inputs, so the same account always gets the same result.
 
 ## Files
 
@@ -43,5 +43,3 @@ The AI analysis is powered by Claude through a small backend in [`worker/`](work
 | `js/analyzer.js` | Link / username parsing and look-alike checks |
 | `js/guard.js` | Badge meanings |
 | `js/i18n.js`, `js/i18n-check.js` | Arabic and English text |
-| `js/config.js` | AI backend address |
-| `worker/` | AI backend (Cloudflare Worker) |
