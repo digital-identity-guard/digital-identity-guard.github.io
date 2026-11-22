@@ -23,6 +23,8 @@
   'use strict';
 
   const SUPPORTED = ['x', 'linkedin', 'instagram'];
+  // Usernames on X, LinkedIn and Instagram cannot contain Arabic letters.
+  const ARABIC_RE = /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/;
 
   // The 12 manual checklist items and their weights (total 10). `hard`: failing it caps the score at 3.
   const MANUAL_ITEMS = [
@@ -61,6 +63,7 @@
   function parseInput(account, pickedPlatform) {
     const parsed = A.parseAccount(account);
     if (!parsed.raw) return { error: 'empty', parsed };
+    if (ARABIC_RE.test(parsed.raw)) return { error: 'arabic', parsed };
     if (parsed.kind === 'invalid') return { error: 'invalid', parsed };
     if (parsed.kind === 'link') {
       if (!parsed.platformId) return { error: 'unknown_site', parsed };
