@@ -126,19 +126,11 @@
     return { mode: 'manual', items, passedCount, total: items.length, score, caps, badge };
   }
 
-  // Small deterministic hash (FNV-1a) so the same account always gets the same result.
-  function hash(str) {
-    let h = 0x811c9dc5;
-    for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 0x01000193); }
-    return (h >>> 0) / 4294967296;
-  }
-
   /**
    * AI analysis (simulated for the prototype). Every indicator gets a pass or fail.
    * Signals the browser can really see (look-alike handle, official-sounding words,
    * random-looking names, links, and the pasted message) decide their indicators and
-   * lower the chance of a pass for the rest. The outcome depends only on the inputs,
-   * so the same account and message always give the same result.
+   * lower the chance of a pass for the rest. The rest is random on every search.
    */
   function analyzeAI(input, base, msg, hf) {
     const status = (bad) => (bad ? 'fail' : 'pass');
@@ -159,22 +151,23 @@
     if (hf.pattern) { real['g3.quality'] = 'fail'; }
     if (hf.lookalike) { real['g1.history'] = 'fail'; real['g9.displayname'] = 'fail'; }
 
-    // Chance that an indicator without a direct signal passes.
-    let p = 0.82;
+    // Chance that an indicator without a direct signal passes: drawn fresh on every search
+    // so the score covers the whole range, then lowered by the warning signs we can see.
+    const rand = input.random || Math.random;
+    let p = 0.05 + rand() * 0.95;
     if (hf.pattern) p -= 0.2;
     if (hf.keyword) p -= 0.25;
     if (hf.lookalike) p -= 0.35;
     if (msg.pressure) p -= 0.15;
     if (msg.money || msg.private) p -= 0.25;
     if (msg.credentials || msg.dangerousLink) p -= 0.35;
-    p = Math.max(0.1, p);
+    p = Math.max(0.03, p);
 
-    const seed = base.platformId + ':' + String(base.parsed.username).toLowerCase();
     const groups = AI_GROUPS.map((g) => ({
       id: g.id,
       items: g.items.map((id) => ({
         id,
-        status: real[id] || (hash(seed + ':' + id) < p ? 'pass' : 'fail'),
+        status: real[id] || (rand() < p ? 'pass' : 'fail'),
         params: id === 'g9.impersonation' && hf.keyword ? { kw: hf.keyword.params.kw } : {},
       })),
     }));

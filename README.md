@@ -32,7 +32,7 @@ Each check gives a score out of 10, which maps to one of the four categories. Se
 
 ## AI analysis
 
-In this prototype the AI analysis is a simulated demo (the page labels it as such). It gives every indicator in the 9 groups a pass or fail. Signals the browser can really see, such as look-alike handles, official-sounding words, links and the pasted message, decide their indicators and lower the result. The outcome depends only on the inputs, so the same account always gets the same result.
+In this prototype the AI analysis is a simulated demo (the page labels it as such). It gives every indicator a pass or fail, randomly on each search. Signals the browser can really see, such as look-alike handles, official-sounding words, links and the pasted message, decide their own indicators and lower the result.
 
 ## Files
 
