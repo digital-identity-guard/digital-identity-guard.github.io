@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Digital Identity Guard – an awareness tool that explains the warning signs of fake and impersonating accounts.">
+<title>حارس الهوية الرقمية | Digital Identity Guard</title>
+<link rel="icon" type="image/svg+xml" href="assets/icon.svg">
+<link rel="icon" type="image/png" href="assets/favicon-32.png">
+<link rel="apple-touch-icon" href="assets/icon-512.png">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<main>
+  <div class="topbar">
+    <button type="button" class="lang-btn" id="lang" data-i18n="lang.switch">English</button>
+  </div>
+
+  <header class="hero">
+    <h1 class="logo"><img src="assets/logo-for-dark-bg.svg" alt="DIGITAL IDENTITY GUARD" width="689" height="264"></h1>
+    <div class="sub" data-i18n="brand.sub">حارس الهوية الرقمية</div>
+    <h2 data-i18n="hero.title">احمِ هويتك الرقمية</h2>
+    <p data-i18n="hero.text"></p>
+    <button type="button" class="primary" id="start" data-i18n="hero.cta"></button>
+  </header>
+
+  <nav aria-label="Main">
+    <button type="button" class="active" data-page="home" data-i18n="nav.home"></button>
+    <button type="button" data-page="scan" data-i18n="nav.scan"></button>
+    <button type="button" data-page="about" data-i18n="nav.about"></button>
+    <button type="button" data-page="tips" data-i18n="nav.tips"></button>
+  </nav>
+
+  <!-- Home -->
+  <section id="home">
+    <h2 data-i18n="home.title"></h2>
+    <div class="tiles">
+      <div class="tile">🔍 <b data-i18n="home.t1"></b><div class="muted" data-i18n="home.t1d"></div></div>
+      <div class="tile">🧠 <b data-i18n="home.t2"></b><div class="muted" data-i18n="home.t2d"></div></div>
+      <div class="tile">📊 <b data-i18n="home.t3"></b><div class="muted" data-i18n="home.t3d"></div></div>
+      <div class="tile">🔐 <b data-i18n="home.t4"></b><div class="muted" data-i18n="home.t4d"></div></div>
+    </div>
+    <p data-i18n="home.text"></p>
+    <p class="privacy" data-i18n="home.privacy"></p>
+  </section>
+
+  <!-- Scan -->
+  <section id="scan" class="hidden">
+    <h2 data-i18n="scan.title"></h2>
+    <p class="muted" data-i18n="scan.intro"></p>
+
+    <form id="scan-form" novalidate>
+      <fieldset>
+        <legend data-i18n="scan.modeStep"></legend>
+        <div class="modes" role="radiogroup" aria-describedby="mode-error">
+          <label class="mode-opt"><input type="radio" name="mode" value="manual">
+            <span class="mode-icon" aria-hidden="true">📝</span>
+            <span><b data-i18n="mode.manual"></b><span class="muted d" data-i18n="mode.manual.d"></span></span></label>
+          <label class="mode-opt"><input type="radio" name="mode" value="ai">
+            <span class="mode-icon" aria-hidden="true">🤖</span>
+            <span><b data-i18n="mode.ai"></b><span class="muted d" data-i18n="mode.ai.d"></span></span></label>
+        </div>
+        <p class="error" id="mode-error" role="alert"></p>
+      </fieldset>
+
+      <div id="steps" class="hidden">
+        <fieldset>
+          <legend data-i18n="scan.accountStep"></legend>
+          <label class="field" for="account" data-i18n="scan.accountLabel"></label>
+          <input id="account" class="ltr" type="text" autocomplete="off" autocapitalize="off" spellcheck="false"
+                 data-i18n-ph="scan.accountPh" aria-describedby="account-error platform-detected">
+          <p class="muted" id="platform-detected" aria-live="polite"></p>
+          <div id="platform-pick" class="hidden">
+            <p class="field-q" id="platform-q" data-i18n="scan.platformQ"></p>
+            <div class="badges" role="radiogroup" aria-labelledby="platform-q">
+              <label class="badge-opt"><input type="radio" name="platform" value="x"><span class="pf pf-x" aria-hidden="true">𝕏</span><span data-i18n="platform.x"></span></label>
+              <label class="badge-opt"><input type="radio" name="platform" value="linkedin"><span class="pf pf-in" aria-hidden="true">in</span><span data-i18n="platform.linkedin"></span></label>
+            </div>
+          </div>
+          <p class="error" id="account-error" role="alert"></p>
+        </fieldset>
+
+        <fieldset>
+          <legend data-i18n="scan.messageStep"></legend>
+          <label class="field" for="message" data-i18n="scan.messageLabel"></label>
+          <textarea id="message" rows="4" dir="auto" data-i18n-ph="scan.messagePh" aria-describedby="message-hint"></textarea>
+          <p class="muted" id="message-hint" data-i18n="scan.messageHint"></p>
+        </fieldset>
+
+        <div id="manual-only" class="hidden">
+          <fieldset>
+            <legend data-i18n="scan.badgeStep"></legend>
+            <p class="field-q" id="badge-q" data-i18n="scan.badgeLabel"></p>
+            <div class="badges" role="radiogroup" aria-labelledby="badge-q">
+              <label class="badge-opt"><input type="radio" name="badge" value="unsure" checked><span data-i18n="badge.unsure"></span></label>
+              <label class="badge-opt"><input type="radio" name="badge" value="none"><span data-i18n="badge.none"></span></label>
+              <label class="badge-opt"><input type="radio" name="badge" value="blue"><i class="dot dot-blue" aria-hidden="true"></i><span data-i18n="badge.blue"></span></label>
+              <label class="badge-opt"><input type="radio" name="badge" value="gold"><i class="dot dot-gold" aria-hidden="true"></i><span data-i18n="badge.gold"></span></label>
+              <label class="badge-opt"><input type="radio" name="badge" value="grey"><i class="dot dot-grey" aria-hidden="true"></i><span data-i18n="badge.grey"></span></label>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend data-i18n="scan.checklistStep"></legend>
+            <p class="muted" data-i18n="scan.checklistHint"></p>
+            <div id="checks"></div>
+          </fieldset>
+        </div>
+
+        <button type="submit" class="primary" id="analyze" data-i18n="scan.analyze"></button>
+        <p class="muted loading hidden" id="loading" role="status" data-i18n="ai.loading"></p>
+      </div>
+    </form>
+
+    <div id="report" class="report hidden" tabindex="-1" aria-live="polite">
+      <div class="disclaimer" data-i18n="res.disclaimer"></div>
+
+      <div class="rsec">
+        <h3 data-i18n="res.catTitle"></h3>
+        <div class="cats" id="cats"></div>
+      </div>
+
+      <div class="rsec score-box">
+        <h3 data-i18n="res.scoreTitle"></h3>
+        <div class="score-row">
+          <div class="result" id="score"></div>
+          <div class="score-meta">
+            <div class="muted" id="score-mode"></div>
+            <dl class="detected" id="detected"></dl>
+          </div>
+        </div>
+        <div class="meter" aria-hidden="true"><div id="meter"></div></div>
+        <p class="muted" id="score-count"></p>
+        <div id="caps"></div>
+      </div>
+
+      <div class="rsec hidden" id="ai-summary-sec"><h3 data-i18n="res.aiSummary"></h3><div id="ai-summary"></div></div>
+      <div class="rsec"><h3 data-i18n="res.listTitle"></h3><div id="items"></div></div>
+      <div class="rsec hidden" id="r-badge-sec"><h3 data-i18n="res.badgeTitle"></h3><div id="r-badge"></div></div>
+      <div class="rsec"><h3 data-i18n="res.messageTitle"></h3><ul class="factors" id="r-messages"></ul></div>
+
+      <div class="report-actions"><button type="button" id="reset" data-i18n="res.reset"></button></div>
+    </div>
+
+    <p class="muted" data-i18n="scan.disclaimer"></p>
+  </section>
+
+  <!-- About -->
+  <section id="about" class="hidden">
+    <h2 data-i18n="about.title"></h2>
+    <div class="stack">
+      <div class="tile"><b data-i18n="about.intro"></b><p data-i18n="about.introText"></p></div>
+      <div class="tile"><b data-i18n="about.method"></b>
+        <ol>
+          <li data-i18n="about.m1"></li>
+          <li data-i18n="about.m2"></li>
+          <li data-i18n="about.m3"></li>
+          <li data-i18n="about.m4"></li>
+          <li data-i18n="about.m5"></li>
+        </ol>
+      </div>
+      <div class="tile"><b data-i18n="about.innov"></b><p data-i18n="about.innovText"></p></div>
+      <div class="tile"><b data-i18n="about.results"></b><p data-i18n="about.resultsText"></p></div>
+      <div class="tile"><b data-i18n="about.future"></b><p data-i18n="about.futureText"></p></div>
+    </div>
+  </section>
+
+  <!-- Tips -->
+  <section id="tips" class="hidden">
+    <h2 data-i18n="tips.title"></h2>
+    <div class="tiles">
+      <div class="tile"><b data-i18n="tips.1"></b><p class="muted" data-i18n="tips.1d"></p></div>
+      <div class="tile"><b data-i18n="tips.2"></b><p class="muted" data-i18n="tips.2d"></p></div>
+      <div class="tile"><b data-i18n="tips.3"></b><p class="muted" data-i18n="tips.3d"></p></div>
+      <div class="tile"><b data-i18n="tips.4"></b><p class="muted" data-i18n="tips.4d"></p></div>
+      <div class="tile"><b data-i18n="tips.5"></b><p class="muted" data-i18n="tips.5d"></p></div>
+      <div class="tile"><b data-i18n="tips.6"></b><p class="muted" data-i18n="tips.6d"></p></div>
+    </div>
+  </section>
+
+  <footer>
+    <img class="foot-icon" src="assets/icon.svg" alt="" width="18" height="18"> DIGITAL IDENTITY GUARD<br>
+    Yazan Omar Alzahrani · Mohannad Ali Alghamdi<br>
+    <span data-i18n="footer.project"></span>
+  </footer>
+</main>
+
+<script src="js/analyzer.js"></script>
+<script src="js/messages.js"></script>
+<script src="js/official-accounts.js"></script>
+<script src="js/guard.js"></script>
+<script src="js/check.js"></script>
+<script src="js/config.js"></script>
+<script src="js/i18n.js"></script>
+<script src="js/i18n-check.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
