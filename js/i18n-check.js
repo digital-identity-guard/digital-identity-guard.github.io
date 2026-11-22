@@ -4,7 +4,7 @@
 
   const ar = {
     'scan.disclaimer': 'تنبيه: النتيجة مساعدة للتوعية وليست حكمًا نهائيًا على صاحب الحساب. الفحص اليدوي يتم داخل متصفحك بالكامل. في التحليل بالذكاء الاصطناعي يُرسل اسم الحساب والرسالة التي لصقتها إلى خدمة التحليل.',
-    'home.privacy': '🔒 الفحص اليدوي يتم بالكامل داخل متصفحك. في التحليل بالذكاء الاصطناعي يُرسل اسم الحساب والرسالة فقط إلى خدمة التحليل، بحد 4 تحليلات في الساعة.',
+    'home.privacy': '🔒 الفحص اليدوي يتم بالكامل داخل متصفحك. في التحليل بالذكاء الاصطناعي يُرسل اسم الحساب والرسالة فقط إلى خدمة التحليل.',
     'scan.intro': 'نتحقق هل الحساب هو فعلًا من يدّعي أنه هو، ونخبرك بنوع المعلومات التي يمكنك مشاركتها معه بأمان.',
     'scan.modeStep': '1. اختر طريقة الفحص',
     'mode.manual': 'فحص يدوي', 'mode.manual.d': 'تجيب عن 12 سؤالًا عن الحساب بنفسك، وتحصل على تقييم من 10.',
@@ -64,11 +64,10 @@
     'cap.coverage_half': 'التقييم محدود بـ 7 لأن أقل من نصف المؤشرات أمكن فحصها. فئة "معلومات شخصية" تحتاج أدلة أكثر.',
     'res.aiSummary': 'خلاصة الذكاء الاصطناعي',
     'res.aiLocal': 'تعذّر الوصول إلى خدمة الذكاء الاصطناعي، فاستخدمنا فحوصات المتصفح فقط.',
-    'res.aiRemaining': 'متبقٍ لك {n} من 4 تحليلات في هذه الساعة.',
     'res.aiNoProfile': 'لم يتمكن الذكاء الاصطناعي من فتح صفحة الحساب نفسها، فاعتمد على نتائج البحث والمصادر العامة.',
     'src.ai': 'ذكاء اصطناعي', 'src.local': 'فحص تلقائي',
     'ai.loading': 'يبحث الذكاء الاصطناعي عن الحساب في المصادر العامة… قد يستغرق ذلك دقيقة.',
-    'ai.rate_limited': 'وصلت إلى الحد: 4 تحليلات بالذكاء الاصطناعي في الساعة. حاول بعد {min} دقيقة، أو استخدم الفحص اليدوي.',
+    'ai.rate_limited': 'التحليل بالذكاء الاصطناعي غير متاح الآن. حاول لاحقًا، أو استخدم الفحص اليدوي.',
     'ai.message_too_long': 'الرسالة طويلة جدًا. الحد الأقصى {max} حرف.',
     'res.listTitle': 'ما اجتازه وما فشل فيه',
     'res.badgeTitle': 'شارة التوثيق',
@@ -126,7 +125,7 @@
   const en = {
     'brand.sub': '', // the Arabic name only shows on the Arabic page
     'scan.disclaimer': 'Note: the result is an awareness aid, not a final judgment about the account owner. The manual check runs entirely in your browser. The AI analysis sends the account name and the message you pasted to the analysis service.',
-    'home.privacy': '🔒 The manual check runs entirely in your browser. The AI analysis sends only the account name and the message to the analysis service, with a limit of 4 analyses per hour.',
+    'home.privacy': '🔒 The manual check runs entirely in your browser. The AI analysis sends only the account name and the message to the analysis service.',
     'scan.intro': 'We check whether the account is really who it claims to be, and tell you what kind of information is safe to share with it.',
     'scan.modeStep': '1. Choose how to check',
     'mode.manual': 'Manual check', 'mode.manual.d': 'You answer 12 questions about the account yourself and get a score out of 10.',
@@ -186,11 +185,10 @@
     'cap.coverage_half': 'The score is capped at 7 because fewer than half of the indicators could be checked. “Personal info” needs more evidence.',
     'res.aiSummary': 'AI summary',
     'res.aiLocal': 'The AI service could not be reached, so only the browser’s own checks were used.',
-    'res.aiRemaining': 'You have {n} of 4 AI analyses left this hour.',
     'res.aiNoProfile': 'The AI could not open the profile page itself, so it relied on search results and other public sources.',
     'src.ai': 'AI', 'src.local': 'Automatic check',
     'ai.loading': 'The AI is researching the account in public sources… this can take a minute.',
-    'ai.rate_limited': 'You reached the limit of 4 AI analyses per hour. Try again in {min} minutes, or use the manual check.',
+    'ai.rate_limited': 'The AI analysis is not available right now. Please try again later, or use the manual check.',
     'ai.message_too_long': 'The message is too long. The maximum is {max} characters.',
     'res.listTitle': 'What it passed and failed',
     'res.badgeTitle': 'Verification badge',

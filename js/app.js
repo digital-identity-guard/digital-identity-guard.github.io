@@ -150,7 +150,7 @@
         }),
       });
       const data = await res.json().catch(() => ({}));
-      if (res.status === 429) return { error: 'ai.rate_limited', params: { min: Math.max(1, Math.ceil((data.retryAfter || 3600) / 60)) } };
+      if (res.status === 429) return { error: 'ai.rate_limited' };
       if (data.error === 'message_too_long') return { error: 'ai.message_too_long', params: { max: data.max } };
       if (!res.ok || !data.indicators) return { local: true, remaining: data.remaining };
       return { remote: data };
@@ -300,10 +300,8 @@
     if (r.remote) {
       if (r.remote.summary) box.append(el('p', { dir: 'auto', text: r.remote.summary }));
       if (!r.remote.profileFound) box.append(el('p', { class: 'note', text: t('res.aiNoProfile') }));
-      if (r.remote.remaining != null) box.append(el('p', { class: 'muted', text: t('res.aiRemaining', { n: r.remote.remaining }) }));
     } else {
       box.append(el('p', { class: 'note', text: t('res.aiLocal') }));
-      if (r.aiState && r.aiState.remaining != null) box.append(el('p', { class: 'muted', text: t('res.aiRemaining', { n: r.aiState.remaining }) }));
     }
   }
 
