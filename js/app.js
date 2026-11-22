@@ -251,7 +251,7 @@
       g.items.forEach((it) => {
         let desc = '';
         if (it.id === 'g9.impersonation' && it.params.kw && it.status === 'fail') desc = t('f.keyword.d', it.params);
-        ul.append(statusRow(it.status, t(it.id), null, desc));
+        ul.append(statusRow(it.status, t(it.id), el('span', { class: 'f-src', text: t('src.ai') }), desc));
       });
       box.append(el('div', { class: 'group' }, [el('h4', { text: t(g.id) }), ul]));
     });
@@ -259,6 +259,8 @@
 
   function renderDemoNote(r) {
     $('demo-note').classList.toggle('hidden', r.mode !== 'ai');
+    $('ai-summary-sec').classList.toggle('hidden', r.mode !== 'ai');
+    if (r.mode === 'ai') $('ai-summary').textContent = t('aisum.' + r.category, { passed: r.passed, failed: r.failed });
   }
 
   function renderBadge(r) {
