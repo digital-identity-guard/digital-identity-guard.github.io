@@ -94,7 +94,6 @@
     'g4.original': 'محتوى أصلي أم إعادة نشر ونصوص منسوخة',
     'g4.style': 'توافق أسلوب الكتابة واللغة واللهجة مع الخلفية المُدّعاة',
     'g4.topic': 'توافق المواضيع مع الوظيفة أو الدور المُدّعى',
-    'g4.automation': 'علامات الأتمتة: توقيت منتظم تمامًا أو قوالب مكررة',
     'g5': '5. أصالة التفاعل',
     'g5.rate': 'الإعجابات والتعليقات مقارنة بعدد المتابعين',
     'g5.comments': 'جودة التعليقات: محادثة حقيقية أم ردود عامة أو آلية',
@@ -114,7 +113,6 @@
     'g8.shortened': 'روابط مختصرة أو مشبوهة',
     'g9': '9. علامات الخطر',
     'g9.money': 'طلبات مال مستعجلة أو عروض عملات رقمية أو استثمار',
-    'g9.private': 'دفع الناس للانتقال إلى قنوات خاصة',
     'g9.impersonation': 'أنماط انتحال مثل أسماء مستخدم مشابهة (rn بدل m)',
     'g9.displayname': 'تغيير اسم العرض مؤخرًا ليطابق شخصًا مشهورًا أو علامة تجارية',
   };
@@ -212,7 +210,6 @@
     'g4.original': 'Original content versus reposts and copied text',
     'g4.style': 'Whether writing style, language and dialect fit the claimed background',
     'g4.topic': 'Topic consistency with the claimed job or role',
-    'g4.automation': 'Signs of automation, like perfectly regular timing or repeated templates',
     'g5': '5. Engagement authenticity',
     'g5.rate': 'Likes and comments compared with follower count',
     'g5.comments': 'Comment quality: real conversation versus generic or bot replies',
@@ -232,7 +229,6 @@
     'g8.shortened': 'Shortened or suspicious links',
     'g9': '9. Risk red flags',
     'g9.money': 'Urgent money requests, crypto or investment pitches',
-    'g9.private': 'Pushing people to move to private channels',
     'g9.impersonation': 'Impersonation patterns, like look-alike handles such as rn instead of m',
     'g9.displayname': 'Recently changed display name to match a famous person or brand',
   };

@@ -36,12 +36,12 @@
     { id: 'g1', items: ['g1.age', 'g1.history', 'g1.badge', 'g1.complete'] },
     { id: 'g2', items: ['g2.reverse', 'g2.aiface', 'g2.consistent'] },
     { id: 'g3', items: ['g3.ratio', 'g3.quality', 'g3.mutuals', 'g3.spikes'] },
-    { id: 'g4', items: ['g4.timing', 'g4.original', 'g4.style', 'g4.topic', 'g4.automation'] },
+    { id: 'g4', items: ['g4.timing', 'g4.original', 'g4.style', 'g4.topic'] },
     { id: 'g5', items: ['g5.rate', 'g5.comments', 'g5.coordinated'] },
     { id: 'g6', items: ['g6.same', 'g6.matching', 'g6.backlinks'] },
     { id: 'g7', items: ['g7.job', 'g7.education', 'g7.footprint'] },
     { id: 'g8', items: ['g8.biolinks', 'g8.breach', 'g8.exif', 'g8.shortened'] },
-    { id: 'g9', items: ['g9.money', 'g9.private', 'g9.impersonation', 'g9.displayname'] },
+    { id: 'g9', items: ['g9.money', 'g9.impersonation', 'g9.displayname'] },
   ];
 
 
@@ -154,10 +154,9 @@
     };
     if (msg.given) {
       real['g9.money'] = status(msg.money);
-      real['g9.private'] = status(msg.private);
       if (msg.pressure || msg.credentials) real['g4.style'] = 'fail';
     }
-    if (hf.pattern) { real['g4.automation'] = 'fail'; real['g3.quality'] = 'fail'; }
+    if (hf.pattern) { real['g3.quality'] = 'fail'; }
     if (hf.lookalike) { real['g1.history'] = 'fail'; real['g9.displayname'] = 'fail'; }
 
     // Chance that an indicator without a direct signal passes.
